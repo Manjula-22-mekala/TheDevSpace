@@ -2,17 +2,17 @@ const express=require('express');
 
 const app=express();
 
-app.use('/hello',(req,res)=>{
-    res.send('Hello hello hello hello');   
+app.get('/user',(req,res)=>{
+    res.send({firstname:"Mekala",lastname:"manjula"})
 });
 
-app.use('/test',(req,res)=>{
-    res.send('Hello World from test route');   
+app.post('/user',(req,res)=>{
+    res.send('Post request called');
 });
 
-app.use('/',(req,res)=>{
-    res.send('Hello World');   
-});
+app.delete('/user',(req,res)=>{
+    res.send('Delete request called');
+}); 
 
 app.listen(3000,()=>{
     console.log('Server is running on port 3000');
