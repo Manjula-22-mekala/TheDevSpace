@@ -2,28 +2,29 @@ const express=require('express');
 
 const app=express();
 
-app.use('/user',
-    [(req,res,next)=>{
-    console.log("Handling the route user");
-    next();
-    //res.send('Response from user route');
-},  (req,res,next)=>{       
-    console.log("Second handler for user route");
-    next();
-   // res.send('Response from second handler of user route');
-}],
-    (req,res,next)=>{
-    console.log("Third handler for user route");
-    next();
-    //res.send('Response from third handler of user route');
-},
-    (req,res)=>{
-    console.log("Fourth handler for user route");
-    res.send('Response from fourth handler of user route');
-}
-);
+const { adminauth,userauth}= require('./middleware/auth');
+
+app.use('/admin',adminauth);
 
 
+app.get('/user/login',(req,res,next)=>{
+    res.send("user login succesfully")
+});
+
+app.get('/user/getData',userauth,(req,res)=>
+{
+    res.send('user data accessed successfully ');
+});
+
+app.get('/admin/getAllData',(req,res)=>
+{
+    res.send('admin data accessed successfully ');
+});     
+
+app.get('/admin/deleteData',(req,res)=>
+{
+    res.send("admiin has deleted data");
+});
 
 app.listen(3000,()=>{
     console.log('Server is running on port 3000');
