@@ -1,0 +1,19 @@
+{
+  "name": "thedevspace",
+  "version": "1.0.0",
+  "description": "A place where developers connect and collabarate",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "keywords": [
+    "node.js",
+    "javascript"
+  ],
+  "author": "mekala manjula",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
