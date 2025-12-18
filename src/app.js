@@ -5,13 +5,14 @@ const user = require('./models/user.js');
 const app=express();
 
 app.use(express.json());
+
 app.post('/signup', async (req,res)=>{
     const user=new User(req.body)
     try{
         await user.save();
         res.send('User signed up successfully');
     }
-    catch{
+    catch(err){
         res.status(400).send("Error saving the user:"+err.message);
     }
 });
@@ -28,7 +29,7 @@ app.get('/user', async (req,res)=>{
             res.send(users);
         }
     }
-    catch{
+    catch(err){
         res.status(400).send("Error retrieving the user:"+err.message);
     }
 })
@@ -45,6 +46,36 @@ app.get('/feed',async(req,res)=>{
         res.status(400).send("Error retrieving users:"+err.message);
     }
 });
+
+//delete user by emailId
+app.delete('/users',async(req,res)=>{
+    const userId=req.body.userId;       
+    try{
+        const result=await User.findByIdAndDelete({userId:userId   });
+        res.send("user deleted successfully");   
+    }
+    catch(err){
+        res.status(400).send("Error deleting user:"+err.message);
+    }       
+});
+// update user details
+app.patch('/users',async(req,res)=>{    
+    const userId=req.body.userId;
+    const data=req.body;
+    try{
+        const user= await User.findByIdAndUpdate(userId,data,
+        {
+         returnDocument:"after",
+         new:true,
+         runValidators:true,
+        });
+        console.log(user);
+        res.send("user updated successfully");
+    }
+    catch(err){
+        res.status(400).send("Error updating user:"+err.message);
+    }
+}); 
 
 connectDB()
     .then(()=>{  
