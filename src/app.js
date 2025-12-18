@@ -1,14 +1,28 @@
 const express=require('express');       
 const connectDB=require('./config/database');
 const User=require('./models/user.js');
-const user = require('./models/user.js');
+const {validateSignupData}=require('./utils/validation');
+const bcrypt=require('bcrypt');
 const app=express();
 
 app.use(express.json());
 
 app.post('/signup', async (req,res)=>{
-    const user=new User(req.body)
+   
     try{
+        //validate signup data
+        validateSignupData(req);
+        const {firstName,lastName,emailId,password}=req.body;
+        //encrypt password before saving (omitted for brevity)
+        const passwordHash=await bcrypt.hash(password,10);
+        console.log("passwordHash:",passwordHash);
+        //create new user
+        const user=new User({
+            firstName,
+            lastName,
+            emailId,
+            password:passwordHash,
+        });
         await user.save();
         res.send('User signed up successfully');
     }
@@ -16,12 +30,37 @@ app.post('/signup', async (req,res)=>{
         res.status(400).send("Error saving the user:"+err.message);
     }
 });
+
+app.post('/login',async(req,res)=>{
+    try{
+        const {emailId,password}=req.body;
+        const users=await User.findOne({emailId:emailId});
+        if(!users){
+            throw new Error("Email not found");
+        }   
+        else{
+            const isPasswordMatch=await bcrypt.compare(password,users.password);
+            if(isPasswordMatch){
+                res.send("Login succesfull!!!");
+            }
+            else{
+                    throw new Error("Invalid creddentials");
+            }
+        
+        }
+
+    }
+    catch(err){
+        res.status(400).send("Error logging in:"+err.message);
+    }       
+});
+
 // get user by emailId
 app.get('/user', async (req,res)=>{
     const userEmail=req.body.emailId;
     try{
     
-        const users=await user.find({emailId:userEmail});
+        const users=await User.find({emailId:userEmail});
         if (users.length===0){
             res.status(404).send('User not found'); 
         }
@@ -32,7 +71,7 @@ app.get('/user', async (req,res)=>{
     catch(err){
         res.status(400).send("Error retrieving the user:"+err.message);
     }
-})
+});
 
 //get all users from database
 
