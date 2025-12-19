@@ -13,6 +13,32 @@ const validateSignupData=(req)=>{
     }
     return true;
 };
+
+const validateEditProfileData = (req) => {
+    if (!req.body || typeof req.body !== "object") {
+        return false;
+    }
+
+    const allowedEditFields = [
+        'firstName',
+        'lastName',
+        'age',
+        'gender',
+        'photoUrl',
+        'about',
+        'skills'
+    ];
+
+    const bodyKeys = Object.keys(req.body);
+
+    if (bodyKeys.length === 0) return false;
+
+    return bodyKeys.every(field =>
+        allowedEditFields.includes(field)
+    );
+};
+
 module.exports={
-    validateSignupData
+    validateSignupData,
+    validateEditProfileData
 };
